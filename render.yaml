@@ -1,0 +1,42 @@
+databases:
+  - name: healthsod-db
+    plan: free
+    databaseName: healthSOD
+    user: postgres
+
+services:
+  - type: web
+    name: healthsod-backend
+    runtime: docker
+    dockerfilePath: ./src/healthSurveillancesod/healthsurveillance/Dockerfile
+    dockerContext: ./src/healthSurveillancesod/healthsurveillance
+    plan: free
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: healthsod-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: healthsod-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: healthsod-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: healthsod-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: healthsod-db
+          property: password
+      - key: DB_SSL
+        value: "?sslmode=require"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: "86400000"
+      - key: FRONTEND_URL
+        value: "https://your-app.vercel.app"

@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:18-alpine3.22
+    container_name: healthSOD-postgres
+    environment:
+      POSTGRES_DB: healthSOD
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./src/healthSurveillancesod/healthsurveillance
+      dockerfile: Dockerfile
+    container_name: healthSOD-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/healthSOD
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: Qw8zVn2pLk6sTg4yXc1eRb7uJm5oHq9wZt3vYf0aSd8lGh2jKr6bWn4xPq7cUi1MQAZwsx2Vn5pLk8sTg7yXc4eRb9uJm6oHq0wZt5vYf3aSd1lGh8jKr2bWn7xPq4cUi9M
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthSOD-frontend
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
