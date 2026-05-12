@@ -1,8 +1,8 @@
 databases:
   - name: healthsod-db
     plan: free
-    databaseName: healthSOD
-    user: postgres
+    databaseName: healthsod
+    user: healthsod_user
 
 services:
   - type: web
