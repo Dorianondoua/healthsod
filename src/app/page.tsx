@@ -311,7 +311,7 @@ export default function LandingPage() {
                   Se connecter
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={() => setModal("register")}
-                  className="flex h-12 items-center gap-2 rounded-2xl bg-cyan-600 px-6 text-sm font-bold text-white shadow-lg shadow-cyan-900/15 transition-colors hover:bg-cyan-700">
+                  className="flex h-9 items-center gap-2 rounded-xl bg-cyan-600 px-4 text-sm font-bold text-white shadow-md shadow-cyan-900/15 transition-colors hover:bg-cyan-700">
                   S'inscrire <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </>
@@ -334,9 +334,9 @@ export default function LandingPage() {
               <a href="#" className="text-sm font-semibold text-slate-500 hover:text-slate-950">Parcours</a>
               <div className="flex gap-3 pt-1">
                 <button onClick={() => { setModal("login"); setMobileOpen(false) }}
-                  className="flex-1 rounded-2xl border border-slate-200 py-3 text-sm font-semibold text-slate-600">Se connecter</button>
+                  className="flex-1 rounded-xl border border-slate-200 py-2 text-sm font-semibold text-slate-600">Se connecter</button>
                 <button onClick={() => { setModal("register"); setMobileOpen(false) }}
-                  className="flex-1 rounded-2xl bg-cyan-600 py-3 text-sm font-bold text-white">S'inscrire</button>
+                  className="flex-1 rounded-xl bg-cyan-600 py-2 text-sm font-bold text-white">S'inscrire</button>
               </div>
             </motion.div>
           )}
