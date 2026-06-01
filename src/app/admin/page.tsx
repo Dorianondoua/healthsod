@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useState } from "react"
 import api from "@/lib/axios"
@@ -22,7 +22,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Edit, Trash2 } from "lucide-react"
+import { Activity, Edit, Trash2 } from "lucide-react"
 
 interface Medecin {
   id: string
@@ -104,8 +104,8 @@ export default function AdminPage() {
         setEncadreurs(encadreursRes.data)
         setError(null)
       } catch (err) {
-        console.error("Erreur chargement données admin :", err)
-        setError("Erreur lors du chargement des données.")
+        console.error("Erreur chargement donnÃ©es admin :", err)
+        setError("Erreur lors du chargement des donnÃ©es.")
       } finally {
         setLoading(false)
       }
@@ -131,14 +131,14 @@ export default function AdminPage() {
       })
       setMedecins([...medecins, res.data])
       setNouveauMedecin({ nom: "", email: "", specialite: "", telephone: "", adresseCabinet: "", password: "" })
-      alert("Médecin ajouté")
+      alert("MÃ©decin ajoutÃ©")
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.message) {
         alert(err.response.data.message)
       } else {
         alert("Erreur lors de l'ajout")
       }
-      console.error("Erreur ajout médecin :", err)
+      console.error("Erreur ajout mÃ©decin :", err)
     }
   }
 
@@ -151,21 +151,21 @@ export default function AdminPage() {
       const res = await api.put(`/admin/medecins/${med.id}`, med)
       setMedecins(medecins.map((m) => (m.id === med.id ? res.data : m)))
       setMedecinEdit(null)
-      alert("Médecin modifié")
+      alert("MÃ©decin modifiÃ©")
     } catch (err) {
-      console.error("Erreur modification médecin :", err)
+      console.error("Erreur modification mÃ©decin :", err)
       alert("Erreur lors de la modification")
     }
   }
 
   const supprimerMedecin = async (id: string) => {
-    if (!confirm("Confirmer la suppression du médecin ?")) return
+    if (!confirm("Confirmer la suppression du mÃ©decin ?")) return
     try {
       await api.delete(`/admin/medecins/${id}`)
       setMedecins(medecins.filter((m) => m.id !== id))
-      alert("Médecin supprimé")
+      alert("MÃ©decin supprimÃ©")
     } catch (err) {
-      console.error("Erreur suppression médecin :", err)
+      console.error("Erreur suppression mÃ©decin :", err)
       alert("Erreur lors de la suppression")
     }
   }
@@ -175,7 +175,7 @@ export default function AdminPage() {
       const nouveauStatut = med.statut === "actif" ? "inactif" : "actif"
       const res = await api.patch(`/admin/medecins/${med.id}/statut`, { statut: nouveauStatut })
       setMedecins(medecins.map((m) => (m.id === med.id ? res.data : m)))
-      alert("Statut modifié")
+      alert("Statut modifiÃ©")
     } catch (err) {
       console.error("Erreur changement statut :", err)
       alert("Erreur lors du changement de statut")
@@ -196,7 +196,7 @@ export default function AdminPage() {
       })
       setEncadreurs([...encadreurs, res.data])
       setNouveauEncadreur({ nom: "", email: "", password: "" })
-      alert("Encadreur ajouté")
+      alert("Encadreur ajoutÃ©")
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.message) {
         alert(err.response.data.message)
@@ -212,7 +212,7 @@ export default function AdminPage() {
     try {
       await api.delete(`/admin/encadreurs/${id}`)
       setEncadreurs(encadreurs.filter((e) => e.id !== id))
-      alert("Encadreur supprimé")
+      alert("Encadreur supprimÃ©")
     } catch (err) {
       console.error("Erreur suppression encadreur :", err)
       alert("Erreur lors de la suppression")
@@ -220,11 +220,11 @@ export default function AdminPage() {
   }
 
   const supprimerPatient = async (id: string) => {
-    if (!confirm("Confirmer la suppression du patient ? Cette action est irréversible.")) return
+    if (!confirm("Confirmer la suppression du patient ? Cette action est irrÃ©versible.")) return
     try {
       await deletePatient(id)
       setPatients(patients.filter((p) => p.id !== id))
-      alert("Patient supprimé avec succès")
+      alert("Patient supprimÃ© avec succÃ¨s")
     } catch (err) {
       console.error("Erreur suppression patient :", err)
       alert("Erreur lors de la suppression du patient")
@@ -232,46 +232,50 @@ export default function AdminPage() {
   }
 
   if (!user) return <div>Chargement...</div>
-  if (user.role?.toLowerCase() !== "admin") return <div>Accès interdit</div>
-  if (loading) return <div>Chargement des données...</div>
+  if (user.role?.toLowerCase() !== "admin") return <div>AccÃ¨s interdit</div>
+  if (loading) return <div>Chargement des donnÃ©es...</div>
   if (error) return <div className="text-red-600">{error}</div>
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* 1. HEADER MODERNISÉ */}
-      <header className="backdrop-blur-md bg-white/60 border-b border-slate-200 shadow-lg animate-fade-in sticky top-0 z-50 mb-8 flex justify-between items-center px-4 py-4">
-        <div className="flex items-center space-x-4">
-          <div className="p-2 bg-gradient-to-br from-gray-500 to-blue-600 rounded-xl shadow-md animate-pop-in">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0-1.104.896-2 2-2s2 .896 2 2-.896 2-2 2-2-.896-2-2zm0 0V7m0 4v4m0 0c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2z" /></svg>
+    <div className="premium-page">
+      {/* 1. HEADER MODERNISÃ‰ */}
+      <header className="premium-nav">
+        <div className="premium-brand">
+          <div className="premium-brand-icon">
+            <Activity className="h-5 w-5" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-600 to-blue-600 bg-clip-text text-transparent animate-gradient-text">Espace Administrateur - {user.nom}</h1>
+          <div>
+            <span className="premium-wordmark">Health<span className="premium-wordmark-accent">SOD</span></span>
+            <span className="premium-kicker">Espace Administrateur</span>
+            <p className="mt-1 text-sm font-medium text-slate-600">Bienvenue, {user.nom}</p>
+          </div>
         </div>
-        <Button variant="outline" onClick={logout} className="ml-2 transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400">
+        <Button onClick={logout} className="premium-button">
           Déconnexion
         </Button>
       </header>
 
-      {/* 2. TABS MODERNISÉS */}
-      <Tabs defaultValue="medecins" className="space-y-8 animate-fade-in">
-        <TabsList className="grid grid-cols-4 gap-4 bg-white/70 backdrop-blur-md p-2 rounded-xl shadow-md">
-          <TabsTrigger value="medecins" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-blue-400">
-            <span>Médecins</span>
+      {/* 2. TABS MODERNISÃ‰S */}
+      <Tabs defaultValue="medecins" className="space-y-8 ">
+        <TabsList className="premium-tabs grid w-full grid-cols-2 lg:grid-cols-4">
+          <TabsTrigger value="medecins" className="premium-tab flex items-center space-x-2">
+            <span>MÃ©decins</span>
           </TabsTrigger>
-          <TabsTrigger value="encadreurs" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-blue-400">
+          <TabsTrigger value="encadreurs" className="premium-tab flex items-center space-x-2">
             <span>Encadreurs</span>
           </TabsTrigger>
-          <TabsTrigger value="patients" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-blue-400">
+          <TabsTrigger value="patients" className="premium-tab flex items-center space-x-2">
             <span>Patients</span>
           </TabsTrigger>
-          <TabsTrigger value="stats" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-blue-400">
+          <TabsTrigger value="stats" className="premium-tab flex items-center space-x-2">
             <span>Statistiques</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="medecins">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Ajouter un médecin</CardTitle>
+              <CardTitle>Ajouter un mÃ©decin</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={ajouterMedecin} className="space-y-4">
@@ -299,7 +303,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <Label>Spécialité</Label>
+                  <Label>SpÃ©cialitÃ©</Label>
                   <Input
                     value={nouveauMedecin.specialite}
                     onChange={(e) =>
@@ -309,7 +313,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <Label>Téléphone</Label>
+                  <Label>TÃ©lÃ©phone</Label>
                   <Input
                     value={nouveauMedecin.telephone}
                     onChange={(e) =>
@@ -340,18 +344,18 @@ export default function AdminPage() {
                     className="rounded-xl border-2 border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
                   />
                 </div>
-                <Button type="submit" className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400">Ajouter</Button>
+                <Button type="submit" className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors">Ajouter</Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card className="mt-6 shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card mt-6">
             <CardHeader>
-              <CardTitle>Liste des médecins</CardTitle>
+              <CardTitle>Liste des mÃ©decins</CardTitle>
             </CardHeader>
             <CardContent>
               {medecins.length === 0 ? (
-                <p>Aucun médecin trouvé</p>
+                <p>Aucun mÃ©decin trouvÃ©</p>
               ) : (
                 <div className="space-y-4">
                   {medecins.map((med) =>
@@ -390,14 +394,14 @@ export default function AdminPage() {
                           className="rounded-xl border-2 border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
                         />
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => modifierMedecin(medecinEdit)} className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400">
+                          <Button size="sm" onClick={() => modifierMedecin(medecinEdit)} className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors">
                             Sauvegarder
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => setMedecinEdit(null)}
-                            className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                            className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                           >
                             Annuler
                           </Button>
@@ -409,11 +413,10 @@ export default function AdminPage() {
                         className="flex justify-between items-center p-4 border rounded-md bg-white"
                       >
                         <div>
-                          <p className="font-semibold">{med.nom}</p>
-                          <p className="text-sm">{med.email}</p>
+                          <p className="ds-row-name">{med.nom}</p>
                           <p className="text-sm">{med.specialite}</p>
                           <p className="text-sm">{med.telephone}</p>
-                          <Badge variant={med.statut === "actif" ? "default" : "secondary"} className={med.statut === "actif" ? "animate-pulse bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                          <Badge variant={med.statut === "actif" ? "default" : "secondary"} className={med.statut === "actif" ? "ds-badge ds-badge-ok" : "ds-badge ds-badge-neutral"}>
                             {med.statut}
                           </Badge>
                         </div>
@@ -422,7 +425,7 @@ export default function AdminPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => setMedecinEdit(med)}
-                            className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                            className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -430,15 +433,15 @@ export default function AdminPage() {
                             size="sm"
                             variant={med.statut === "actif" ? "destructive" : "default"}
                             onClick={() => changerStatutMedecin(med)}
-                            className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                            className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                           >
-                            {med.statut === "actif" ? "Désactiver" : "Activer"}
+                            {med.statut === "actif" ? "DÃ©sactiver" : "Activer"}
                           </Button>
                           <Button
                             size="sm"
                             variant="destructive"
                             onClick={() => supprimerMedecin(med.id)}
-                            className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                            className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -453,7 +456,7 @@ export default function AdminPage() {
         </TabsContent>
 
         <TabsContent value="encadreurs">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
               <CardTitle>Ajouter un encadreur</CardTitle>
             </CardHeader>
@@ -493,18 +496,18 @@ export default function AdminPage() {
                     className="rounded-xl border-2 border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
                   />
                 </div>
-                <Button type="submit" className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400">Ajouter</Button>
+                <Button type="submit" className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors">Ajouter</Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card className="mt-6 shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card mt-6">
             <CardHeader>
               <CardTitle>Liste des encadreurs</CardTitle>
             </CardHeader>
             <CardContent>
               {encadreurs.length === 0 ? (
-                <p>Aucun encadreur trouvé</p>
+                <p>Aucun encadreur trouvÃ©</p>
               ) : (
                 <div className="space-y-4">
                   {encadreurs.map((encadreur) => (
@@ -513,15 +516,14 @@ export default function AdminPage() {
                       className="flex justify-between items-center p-4 border rounded-md bg-white"
                     >
                       <div>
-                        <p className="font-semibold">{encadreur.nom}</p>
-                        <p className="text-sm">{encadreur.email}</p>
+                        <p className="ds-row-name">{encadreur.nom}</p>
                       </div>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="destructive"
                           onClick={() => supprimerEncadreur(encadreur.id)}
-                          className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                          className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -535,14 +537,14 @@ export default function AdminPage() {
         </TabsContent>
 
         <TabsContent value="patients">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
               <CardTitle>Liste des patients</CardTitle>
-              <CardDescription>Gérez les patients du système</CardDescription>
+              <CardDescription>GÃ©rez les patients du systÃ¨me</CardDescription>
             </CardHeader>
             <CardContent>
               {patients.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Aucun patient trouvé</p>
+                <p className="text-gray-500 text-center py-8">Aucun patient trouvÃ©</p>
               ) : (
                 <div className="space-y-4">
                   {patients.map((patient) => (
@@ -551,9 +553,8 @@ export default function AdminPage() {
                       className="p-4 border rounded-md bg-white flex justify-between items-center"
                     >
                       <div>
-                        <p className="font-semibold">{patient.nom}</p>
-                        <p className="text-sm text-gray-600">{patient.email}</p>
-                        <Badge variant={patient.statut === "actif" ? "default" : "secondary"} className={patient.statut === "actif" ? "animate-pulse bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                        <p className="ds-row-name">{patient.nom}</p>
+                        <Badge variant={patient.statut === "actif" ? "default" : "secondary"} className={patient.statut === "actif" ? "ds-badge ds-badge-ok" : "ds-badge ds-badge-neutral"}>
                           {patient.statut}
                         </Badge>
                       </div>
@@ -562,7 +563,7 @@ export default function AdminPage() {
                           size="sm"
                           variant="destructive"
                           onClick={() => supprimerPatient(patient.id)}
-                          className="rounded-xl shadow-md bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+                          className="rounded-xl bg-gradient-to-r from-gray-600 to-blue-600 text-white font-semibold transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -576,16 +577,16 @@ export default function AdminPage() {
         </TabsContent>
 
         <TabsContent value="stats">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-gray-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Statistiques générales</CardTitle>
-              <CardDescription>Nombre total de patients et médecins</CardDescription>
+              <CardTitle>Statistiques gÃ©nÃ©rales</CardTitle>
+              <CardDescription>Nombre total de patients et mÃ©decins</CardDescription>
             </CardHeader>
             <CardContent>
               {statistiques ? (
                 <div className="space-y-2">
                   <p>Total patients : {statistiques.totalPatients}</p>
-                  <p>Total médecins : {statistiques.totalMedecins}</p>
+                  <p>Total mÃ©decins : {statistiques.totalMedecins}</p>
                 </div>
               ) : (
                 <p>Pas de statistiques disponibles</p>
@@ -597,4 +598,6 @@ export default function AdminPage() {
     </div>
   )
 }
+
+
 

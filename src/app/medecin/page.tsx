@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useState } from "react"
 import api from "@/lib/axios"
@@ -39,7 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Edit, Trash2, Eye, Calendar, FileText, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react"
+import { Activity, Edit, Trash2, Eye, Calendar, FileText, CheckCircle, XCircle, Clock, AlertTriangle, ArrowRight } from "lucide-react"
 
 interface Patient {
   id: string
@@ -124,7 +124,7 @@ export default function MedecinPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // État pour la recherche
+  // Ã‰tat pour la recherche
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Patient[]>([])
   const [isSearching, setIsSearching] = useState(false)
@@ -136,7 +136,7 @@ export default function MedecinPage() {
     gravite: "",
   })
 
-  // États pour les rendez-vous
+  // Ã‰tats pour les rendez-vous
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [appointmentAction, setAppointmentAction] = useState<{
     statut: string
@@ -147,7 +147,7 @@ export default function MedecinPage() {
     statut: "CONFIRME"
   })
 
-  // États pour les prescriptions
+  // Ã‰tats pour les prescriptions
   const [nouvellePrescription, setNouvellePrescription] = useState({
     patientId: "",
     description: "",
@@ -156,7 +156,7 @@ export default function MedecinPage() {
     duree_traitement: ""
   })
 
-  // États pour le planning
+  // Ã‰tats pour le planning
   const [plannings, setPlannings] = useState<Planning[]>([])
   const [nouveauPlanning, setNouveauPlanning] = useState({
     medecinId: "",
@@ -168,13 +168,13 @@ export default function MedecinPage() {
   })
   const [planningEnEdition, setPlanningEnEdition] = useState<Planning | null>(null)
 
-  // États pour les alertes épidémiologiques
+  // Ã‰tats pour les alertes Ã©pidÃ©miologiques
   const [alertes, setAlertes] = useState<Alerte[]>([])
   const [loadingAlertes, setLoadingAlertes] = useState(false)
 
   // Badge rouge clignotant si au moins une alerte active
   const hasActiveAlert = alertes.some(a => a.statut === "ACTIVE")
-  // Badge vert clignotant si au moins un rendez-vous en attente (insensible à la casse)
+  // Badge vert clignotant si au moins un rendez-vous en attente (insensible Ã  la casse)
   const hasNewRdv = appointments.some(rdv => rdv.statut?.toLowerCase() === "en_attente")
 
   useEffect(() => {
@@ -192,10 +192,10 @@ export default function MedecinPage() {
         console.log("[MedecinPage] user.id =", user.id)
         console.log("[MedecinPage] user.email =", user.email)
         
-        // D'abord récupérer l'ID correct du médecin
+        // D'abord rÃ©cupÃ©rer l'ID correct du mÃ©decin
         const medecinRes = await api.get(`/medecins/me?email=${encodeURIComponent(user.email)}`)
         const medecinId = medecinRes.data.id
-        console.log("[MedecinPage] Médecin ID correct:", medecinId)
+        console.log("[MedecinPage] MÃ©decin ID correct:", medecinId)
         
         const [patientsRes, symptomesRes, prescriptionsRes, rdvsRes] = await Promise.all([
           api.get("/medecins/patients"),
@@ -204,7 +204,7 @@ export default function MedecinPage() {
           api.get(`/medecins/rendezvous/${medecinId}`),
         ])
 
-        console.log("[MedecinPage] Rendez-vous reçus:", rdvsRes.data)
+        console.log("[MedecinPage] Rendez-vous reÃ§us:", rdvsRes.data)
         setPatients(patientsRes.data)
         setSymptomes(symptomesRes.data)
         setPrescriptions(prescriptionsRes.data)
@@ -215,8 +215,8 @@ export default function MedecinPage() {
         
         setError(null)
       } catch (err) {
-        console.error("Erreur chargement données médecin :", err)
-        setError("Erreur lors du chargement des données.")
+        console.error("Erreur chargement donnÃ©es mÃ©decin :", err)
+        setError("Erreur lors du chargement des donnÃ©es.")
       } finally {
         setLoading(false)
       }
@@ -224,15 +224,15 @@ export default function MedecinPage() {
     fetchData()
   }, [user, router])
 
-  // Voir les symptômes d'un patient
+  // Voir les symptÃ´mes d'un patient
   const voirSymptomesPatient = async (patient: Patient) => {
     try {
       const res = await api.get(`/medecins/patients/${patient.id}/symptomes`)
       setPatientSymptomes(res.data)
       setSelectedPatient(patient)
     } catch (err) {
-      console.error("Erreur chargement symptômes patient :", err)
-      alert("Erreur lors du chargement des symptômes")
+      console.error("Erreur chargement symptÃ´mes patient :", err)
+      alert("Erreur lors du chargement des symptÃ´mes")
     }
   }
 
@@ -255,31 +255,31 @@ export default function MedecinPage() {
     }
   }
 
-  // Gérer un rendez-vous
+  // GÃ©rer un rendez-vous
   const gererRendezVous = async () => {
     if (!selectedAppointment || !user) return
 
     try {
-      // Récupérer l'ID correct du médecin
+      // RÃ©cupÃ©rer l'ID correct du mÃ©decin
       const medecinRes = await api.get(`/medecins/me?email=${encodeURIComponent(user.email)}`)
       const medecinId = medecinRes.data.id
       
       await api.put(`/medecins/rendezvous/${selectedAppointment.id}/statut`, appointmentAction)
       
-      // Mettre à jour la liste des rendez-vous
+      // Mettre Ã  jour la liste des rendez-vous
       const res = await api.get(`/medecins/rendezvous/${medecinId}`)
       setAppointments(res.data)
       
       setSelectedAppointment(null)
       setAppointmentAction({ statut: "CONFIRME" })
-      alert("Rendez-vous mis à jour avec succès")
+      alert("Rendez-vous mis Ã  jour avec succÃ¨s")
     } catch (err) {
-      console.error("Erreur mise à jour rendez-vous :", err)
-      alert("Erreur lors de la mise à jour")
+      console.error("Erreur mise Ã  jour rendez-vous :", err)
+      alert("Erreur lors de la mise Ã  jour")
     }
   }
 
-  // Créer une prescription
+  // CrÃ©er une prescription
   const creerPrescription = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nouvellePrescription.patientId || !nouvellePrescription.description || !user) {
@@ -288,7 +288,7 @@ export default function MedecinPage() {
     }
 
     try {
-      // Récupérer l'ID du médecin connecté
+      // RÃ©cupÃ©rer l'ID du mÃ©decin connectÃ©
       const medecinResponse = await api.get(`/medecins/me?email=${user.email}`)
       const medecinId = medecinResponse.data.id
 
@@ -303,10 +303,10 @@ export default function MedecinPage() {
         heure: new Date().toTimeString().split(' ')[0]
       }
 
-      console.log("Données prescription envoyées:", prescriptionData)
+      console.log("DonnÃ©es prescription envoyÃ©es:", prescriptionData)
 
       const res = await api.post("/medecins/prescriptions", prescriptionData)
-      console.log("Réponse prescription:", res.data)
+      console.log("RÃ©ponse prescription:", res.data)
       
       setPrescriptions([...prescriptions, res.data])
       setNouvellePrescription({
@@ -316,18 +316,18 @@ export default function MedecinPage() {
         posologie: "",
         duree_traitement: ""
       })
-      alert("Prescription créée avec succès")
+      alert("Prescription crÃ©Ã©e avec succÃ¨s")
     } catch (err) {
-      console.error("Erreur création prescription :", err)
-      alert("Erreur lors de la création de la prescription")
+      console.error("Erreur crÃ©ation prescription :", err)
+      alert("Erreur lors de la crÃ©ation de la prescription")
     }
   }
 
-  // Ajouter symptôme
+  // Ajouter symptÃ´me
   const ajouterSymptome = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nouveauSymptome.nom || !nouveauSymptome.gravite) {
-      alert("Nom et gravité sont obligatoires")
+      alert("Nom et gravitÃ© sont obligatoires")
       return
     }
 
@@ -335,39 +335,39 @@ export default function MedecinPage() {
       const res = await api.post("/medecins/symptomes", nouveauSymptome)
       setSymptomes([...symptomes, res.data])
       setNouveauSymptome({ nom: "", description: "", gravite: "" })
-      alert("Symptôme ajouté")
+      alert("SymptÃ´me ajoutÃ©")
     } catch (err) {
-      console.error("Erreur ajout symptôme :", err)
+      console.error("Erreur ajout symptÃ´me :", err)
       alert("Erreur lors de l'ajout")
     }
   }
 
-  // Modifier symptôme
+  // Modifier symptÃ´me
   const modifierSymptome = async (symptome: Symptom) => {
     if (!symptome.nom || !symptome.gravite) {
-      alert("Nom et gravité sont obligatoires")
+      alert("Nom et gravitÃ© sont obligatoires")
       return
     }
     try {
       const res = await api.put(`/medecins/symptomes/${symptome.id}`, symptome)
       setSymptomes(symptomes.map((s) => (s.id === symptome.id ? res.data : s)))
       setSymptomeEnEdition(null)
-      alert("Symptôme modifié")
+      alert("SymptÃ´me modifiÃ©")
     } catch (err) {
-      console.error("Erreur modification symptôme :", err)
+      console.error("Erreur modification symptÃ´me :", err)
       alert("Erreur lors de la modification")
     }
   }
 
-  // Supprimer symptôme
+  // Supprimer symptÃ´me
   const supprimerSymptome = async (id: string) => {
-    if (!confirm("Confirmer la suppression du symptôme ?")) return
+    if (!confirm("Confirmer la suppression du symptÃ´me ?")) return
     try {
       await api.delete(`/medecins/symptomes/${id}`)
       setSymptomes(symptomes.filter((s) => s.id !== id))
-      alert("Symptôme supprimé")
+      alert("SymptÃ´me supprimÃ©")
     } catch (err) {
-      console.error("Erreur suppression symptôme :", err)
+      console.error("Erreur suppression symptÃ´me :", err)
       alert("Erreur lors de la suppression")
     }
   }
@@ -389,12 +389,12 @@ export default function MedecinPage() {
   const creerPlanning = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nouveauPlanning.jour || !nouveauPlanning.heureDebut || !nouveauPlanning.heureFin) {
-      alert("Jour, heure début et heure fin sont obligatoires")
+      alert("Jour, heure dÃ©but et heure fin sont obligatoires")
       return
     }
 
     if (!user) {
-      alert("Utilisateur non connecté")
+      alert("Utilisateur non connectÃ©")
       return
     }
 
@@ -421,10 +421,10 @@ export default function MedecinPage() {
         disponible: true,
         notes: ""
       })
-      alert("Planning créé avec succès")
+      alert("Planning crÃ©Ã© avec succÃ¨s")
     } catch (err) {
-      console.error("Erreur création planning :", err)
-      alert("Erreur lors de la création")
+      console.error("Erreur crÃ©ation planning :", err)
+      alert("Erreur lors de la crÃ©ation")
     }
   }
 
@@ -440,7 +440,7 @@ export default function MedecinPage() {
       })
       await chargerPlanning()
       setPlanningEnEdition(null)
-      alert("Planning modifié avec succès")
+      alert("Planning modifiÃ© avec succÃ¨s")
     } catch (err) {
       console.error("Erreur modification planning :", err)
       alert("Erreur lors de la modification")
@@ -452,14 +452,14 @@ export default function MedecinPage() {
     try {
       await api.delete(`/medecins/planning/${id}`)
       await chargerPlanning()
-      alert("Planning supprimé")
+      alert("Planning supprimÃ©")
     } catch (err) {
       console.error("Erreur suppression planning :", err)
       alert("Erreur lors de la suppression")
     }
   }
 
-  // Fonctions pour les alertes épidémiologiques
+  // Fonctions pour les alertes Ã©pidÃ©miologiques
   const chargerAlertes = async () => {
     try {
       setLoadingAlertes(true)
@@ -476,22 +476,22 @@ export default function MedecinPage() {
     try {
       await api.post('/alertes/analyser')
       await chargerAlertes()
-      alert("Analyse épidémiologique terminée")
+      alert("Analyse Ã©pidÃ©miologique terminÃ©e")
     } catch (err) {
-      console.error("Erreur analyse épidémiologique :", err)
+      console.error("Erreur analyse Ã©pidÃ©miologique :", err)
       alert("Erreur lors de l'analyse")
     }
   }
 
   const resoudreAlerte = async (alerteId: string) => {
-    if (!confirm("Confirmer la résolution de cette alerte ?")) return
+    if (!confirm("Confirmer la rÃ©solution de cette alerte ?")) return
     try {
       await api.put(`/alertes/${alerteId}/resoudre`)
       await chargerAlertes()
-      alert("Alerte résolue")
+      alert("Alerte rÃ©solue")
     } catch (err) {
-      console.error("Erreur résolution alerte :", err)
-      alert("Erreur lors de la résolution")
+      console.error("Erreur rÃ©solution alerte :", err)
+      alert("Erreur lors de la rÃ©solution")
     }
   }
 
@@ -501,33 +501,31 @@ export default function MedecinPage() {
   }, [])
 
   if (!user) return <div>Chargement...</div>
-  if (user.role?.toLowerCase() !== "medecin") return <div>Accès interdit</div>
-  if (loading) return <div>Chargement des données...</div>
+  if (user.role?.toLowerCase() !== "medecin") return <div>AccÃ¨s interdit</div>
+  if (loading) return <div>Chargement des donnÃ©es...</div>
   if (error) return <div className="text-red-600">{error}</div>
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* 1. HEADER MODERNISÉ */}
-      <header className="backdrop-blur-md bg-white/60 border-b border-slate-200 shadow-lg animate-fade-in sticky top-0 z-50 mb-8 flex justify-between items-center px-4 py-4">
-        <div className="flex items-center space-x-4">
-          <div className="p-2 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl shadow-md animate-pop-in">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 4h10a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2zm2 4h4" /></svg>
+    <div className="premium-page">
+      <Tabs defaultValue="patients" className="space-y-8">
+        <header className="premium-nav">
+          <div className="premium-brand">
+            <div className="premium-brand-icon">
+              <Activity className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="premium-wordmark">Health<span className="premium-wordmark-accent">SOD</span></span>
+              <span className="premium-kicker">Espace Médecin</span>
+              <p className="mt-1 text-sm font-medium text-slate-600">Dr. {user.nom}</p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent animate-gradient-text">Bienvenue Dr. {user.nom}</h1>
-        </div>
-        <Button variant="outline" onClick={logout} className="ml-2 transition-transform hover:scale-105 focus:ring-2 focus:ring-blue-400">
-          Déconnexion
-        </Button>
-      </header>
 
-      {/* 2. TABS MODERNISÉS */}
-      <Tabs defaultValue="patients" className="space-y-8 animate-fade-in">
-        <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-md rounded-xl shadow-md">
-          <TabsTrigger value="patients" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-green-400">
-            <span>Patients</span>
-          </TabsTrigger>
-          <TabsTrigger value="rendezvous" className="flex items-center space-x-2 relative transition-all hover:scale-105 focus:ring-2 focus:ring-green-400">
-            <span>Rendez-vous</span>
+            <TabsList className="premium-tabs grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:w-auto lg:grid-cols-5">
+              <TabsTrigger value="patients" className="premium-tab">
+                Patients
+              </TabsTrigger>
+              <TabsTrigger value="rendezvous" className="premium-tab relative">
+                Rendez-vous
             {hasNewRdv && (
               <span className="absolute -top-1 -right-2 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -535,14 +533,14 @@ export default function MedecinPage() {
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="prescriptions" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-green-400">
-            <span>Prescriptions</span>
+          <TabsTrigger value="prescriptions" className="premium-tab">
+            Prescriptions
           </TabsTrigger>
-          <TabsTrigger value="planning" className="flex items-center space-x-2 transition-all hover:scale-105 focus:ring-2 focus:ring-green-400">
-            <span>Planning</span>
+          <TabsTrigger value="planning" className="premium-tab">
+            Planning
           </TabsTrigger>
-          <TabsTrigger value="alertes" className="flex items-center space-x-2 relative transition-all hover:scale-105 focus:ring-2 focus:ring-green-400">
-            <span>Alertes</span>
+          <TabsTrigger value="alertes" className="premium-tab relative">
+            Alertes
             {hasActiveAlert && (
               <span className="absolute -top-1 -right-2 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -552,14 +550,20 @@ export default function MedecinPage() {
           </TabsTrigger>
         </TabsList>
 
+            <Button onClick={logout} className="premium-button h-12 px-6">
+              Déconnexion
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+        </header>
+
         <TabsContent value="patients">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Rechercher et consulter les patients</CardTitle>
+              <p className="ds-section-kicker">Dossiers patients</p>
+              <CardTitle className="ds-section-title">Rechercher et consulter les patients</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Barre de recherche */}
                 <div className="flex gap-2">
                   <Input
                     placeholder="Rechercher par nom ou email..."
@@ -572,93 +576,77 @@ export default function MedecinPage() {
                         setSearchResults([])
                       }
                     }}
-                    className="rounded-xl border-2 border-slate-200 focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all"
+                    className="rounded-xl border-1.5 border-slate-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all h-11"
                   />
-                        <Button
-                          variant="outline"
-                    onClick={() => {
-                      setSearchQuery("")
-                      setSearchResults([])
-                    }}
-                        >
+                  <Button variant="outline" className="rounded-xl h-11"
+                    onClick={() => { setSearchQuery(""); setSearchResults([]) }}>
                     Effacer
-                        </Button>
-                      </div>
+                  </Button>
+                </div>
 
-                {/* Résultats de recherche */}
                 {searchQuery && (
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-sm text-gray-600">
-                      Résultats de recherche ({searchResults.length})
-                    </h3>
-                    {isSearching && <p className="text-sm text-gray-500">Recherche en cours...</p>}
+                    <p className="ds-section-kicker">Résultats ({searchResults.length})</p>
+                    {isSearching && (
+                      <div className="ds-empty">
+                        <div className="ds-skeleton h-4 w-40 rounded" />
+                        <div className="ds-skeleton h-4 w-32 rounded" />
+                      </div>
+                    )}
                     {!isSearching && searchResults.length === 0 && (
-                      <p className="text-sm text-gray-500">Aucun patient trouvé</p>
+                      <div className="ds-empty">
+                        <div className="ds-empty-icon"><Eye className="h-5 w-5" /></div>
+                        <p className="ds-empty-title">Aucun patient trouvé</p>
+                        <p className="ds-empty-body">Essayez avec un autre nom ou email.</p>
+                      </div>
                     )}
                     {searchResults.map((patient) => (
-                      <div
-                        key={patient.id}
-                        className="p-3 border rounded-md bg-blue-50 flex justify-between items-center"
-                    >
-                      <div>
-                          <p className="font-semibold">{patient.nom}</p>
-                          <p className="text-sm">{patient.email}</p>
-                          <p className="text-sm">
-                            {patient.ville} - {patient.quartier}
-                          </p>
-                      </div>
-                      <div className="flex gap-2">
-                          <Badge variant={patient.statut === "actif" ? "default" : "secondary"} className={patient.statut === "actif" ? "animate-pulse bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                      <div key={patient.id} className="ds-row">
+                        <div>
+                          <p className="ds-row-name">{patient.nom}</p>
+                          <p className="ds-row-meta">{patient.ville}, {patient.quartier}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`ds-badge ${patient.statut === "actif" ? "ds-badge-ok" : "ds-badge-neutral"}`}>
+                            <span className="ds-badge-dot" />
                             {patient.statut}
-                          </Badge>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                            onClick={() => voirSymptomesPatient(patient)}
-                        >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Symptômes
-                        </Button>
+                          </span>
+                          <Button size="sm" variant="outline" className="rounded-xl h-8 text-xs"
+                            onClick={() => voirSymptomesPatient(patient)}>
+                            <Eye className="h-3.5 w-3.5 mr-1.5" />Symptômes
+                          </Button>
                         </div>
                       </div>
                     ))}
-                    </div>
+                  </div>
                 )}
 
-                {/* Liste complète des patients */}
                 {!searchQuery && (
                   <>
-                    <h3 className="font-semibold text-sm text-gray-600">
-                      Tous les patients ({patients.length})
-                    </h3>
-              {patients.length === 0 ? (
-                <p>Aucun patient trouvé</p>
-              ) : (
-                <div className="space-y-4">
-                  {patients.map((patient) => (
-                    <div
-                      key={patient.id}
-                      className="p-4 border rounded-md bg-white flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="font-semibold">{patient.nom}</p>
-                        <p className="text-sm">{patient.email}</p>
-                        <p className="text-sm">
-                          {patient.ville} - {patient.quartier}
-                        </p>
-                        <p className="text-sm">{patient.telephone}</p>
+                    <p className="ds-section-kicker">Tous les patients ({patients.length})</p>
+                    {patients.length === 0 ? (
+                      <div className="ds-empty">
+                        <div className="ds-empty-icon"><FileText className="h-5 w-5" /></div>
+                        <p className="ds-empty-title">Aucun patient enregistré</p>
+                        <p className="ds-empty-body">Les patients apparaîtront ici une fois inscrits sur la plateforme.</p>
                       </div>
-                            <div className="flex gap-2">
-                      <Badge variant={patient.statut === "actif" ? "default" : "secondary"} className={patient.statut === "actif" ? "animate-pulse bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
-                        {patient.statut}
-                      </Badge>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => voirSymptomesPatient(patient)}
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                Symptômes
+                    ) : (
+                      <div className="space-y-3">
+                        {patients.map((patient) => (
+                          <div key={patient.id} className="ds-row">
+                            <div>
+                              <p className="ds-row-name">{patient.nom}</p>
+                              <p className="ds-row-meta">{patient.ville}, {patient.quartier}</p>
+                              <p className="ds-row-meta">{patient.telephone}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`ds-badge ${patient.statut === "actif" ? "ds-badge-ok" : "ds-badge-neutral"}`}>
+                                <span className="ds-badge-dot" />
+                                {patient.statut}
+                              </span>
+                              <Button size="sm" variant="outline" className="rounded-xl h-8 text-xs"
+                                onClick={() => voirSymptomesPatient(patient)}>
+                                <Eye className="h-3.5 w-3.5 mr-1.5" />Symptômes
                               </Button>
                             </div>
                           </div>
@@ -671,28 +659,28 @@ export default function MedecinPage() {
             </CardContent>
           </Card>
 
-          {/* Dialog pour voir les symptômes d'un patient */}
+          {/* Dialog pour voir les symptÃ´mes d'un patient */}
           <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Symptômes de {selectedPatient?.nom}</DialogTitle>
+                <DialogTitle>SymptÃ´mes de {selectedPatient?.nom}</DialogTitle>
                 <DialogDescription>
-                  Liste des symptômes enregistrés par ce patient
+                  Liste des symptÃ´mes enregistrÃ©s par ce patient
                 </DialogDescription>
               </DialogHeader>
               <div className="max-h-96 overflow-y-auto">
                 {patientSymptomes.length === 0 ? (
-                  <p className="text-gray-500">Aucun symptôme enregistré</p>
+                  <p className="ds-empty-body">Aucun symptÃ´me enregistrÃ©</p>
                 ) : (
                   <div className="space-y-3">
                     {patientSymptomes.map((symptome) => (
                       <div key={symptome.id} className="p-3 border rounded-md">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-semibold">{symptome.nom}</p>
+                            <p className="ds-row-name">{symptome.nom}</p>
                             <p className="text-sm text-gray-600">{symptome.description}</p>
                             <p className="text-xs text-gray-500">
-                              {new Date(symptome.date).toLocaleDateString("fr-FR")} à {symptome.heure}
+                              {new Date(symptome.date).toLocaleDateString("fr-FR")} Ã  {symptome.heure}
                             </p>
                           </div>
                           <Badge variant="outline">{symptome.gravite}</Badge>
@@ -707,26 +695,23 @@ export default function MedecinPage() {
         </TabsContent>
 
         <TabsContent value="rendezvous">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Rendez-vous reçus</CardTitle>
+              <CardTitle>Rendez-vous reÃ§us</CardTitle>
             </CardHeader>
             <CardContent>
               {appointments.length === 0 ? (
-                <p>Aucun rendez-vous</p>
+                <div className="ds-empty"><div className="ds-empty-icon"><Calendar className="h-5 w-5" /></div><p className="ds-empty-title">Aucun rendez-vous</p><p className="ds-empty-body">Vos prochains rendez-vous apparaîtront ici.</p></div>
               ) : (
                 <div className="space-y-4">
                   {appointments.map((rdv) => (
                     <div
                       key={rdv.id}
-                      className="p-4 border rounded-md bg-white"
-                    >
-                      <div className="flex justify-between items-start">
+                      className="ds-row"><div className="flex justify-between items-center gap-3">
                         <div>
-                          <p className="font-semibold">{rdv.patient?.nom || "Patient"}</p>
-                          <p className="text-sm">{rdv.patient?.email}</p>
+                          <p className="ds-row-name">{rdv.patient?.nom || "Patient"}</p>
                           <p className="text-sm">
-                            {new Date(rdv.date_rdv).toLocaleDateString("fr-FR")} à {rdv.heure}
+                            {new Date(rdv.date_rdv).toLocaleDateString("fr-FR")} Ã  {rdv.heure}
                           </p>
                           {rdv.motif && <p className="text-sm text-gray-600">Motif: {rdv.motif}</p>}
                         </div>
@@ -744,7 +729,7 @@ export default function MedecinPage() {
                             onClick={() => setSelectedAppointment(rdv)}
                           >
                             <Calendar className="h-4 w-4 mr-2" />
-                            Gérer
+                            GÃ©rer
                           </Button>
                         </div>
                       </div>
@@ -755,13 +740,13 @@ export default function MedecinPage() {
             </CardContent>
           </Card>
 
-          {/* Dialog pour gérer un rendez-vous */}
+          {/* Dialog pour gÃ©rer un rendez-vous */}
           <Dialog open={!!selectedAppointment} onOpenChange={() => setSelectedAppointment(null)}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Gérer le rendez-vous</DialogTitle>
+                <DialogTitle>GÃ©rer le rendez-vous</DialogTitle>
                 <DialogDescription>
-                  {selectedAppointment?.patient?.nom} - {new Date(selectedAppointment?.date_rdv || "").toLocaleDateString("fr-FR")} à {selectedAppointment?.heure}
+                  {selectedAppointment?.patient?.nom} - {new Date(selectedAppointment?.date_rdv || "").toLocaleDateString("fr-FR")} Ã  {selectedAppointment?.heure}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -804,7 +789,7 @@ export default function MedecinPage() {
                 )}
 
                 <div>
-                  <Label>Notes du médecin</Label>
+                  <Label>Notes du mÃ©decin</Label>
                   <Textarea
                     value={appointmentAction.notesMedecin || ""}
                     onChange={(e) => setAppointmentAction({...appointmentAction, notesMedecin: e.target.value})}
@@ -825,9 +810,9 @@ export default function MedecinPage() {
         </TabsContent>
 
         <TabsContent value="prescriptions">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Créer une prescription</CardTitle>
+              <CardTitle>CrÃ©er une prescription</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={creerPrescription} className="space-y-4">
@@ -840,7 +825,7 @@ export default function MedecinPage() {
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un patient" />
+                      <SelectValue placeholder="SÃ©lectionner un patient" />
                     </SelectTrigger>
                     <SelectContent>
                       {patients.map((patient) => (
@@ -861,14 +846,14 @@ export default function MedecinPage() {
                   />
                 </div>
                 <div>
-                  <Label>Médicaments</Label>
+                  <Label>MÃ©dicaments</Label>
                   <Input
                     value={nouvellePrescription.medicaments}
                     onChange={(e) => setNouvellePrescription({...nouvellePrescription, medicaments: e.target.value})}
-                    placeholder="Ex: Paracétamol, Ibuprofène, Vitamine C (séparés par des virgules)"
+                    placeholder="Ex: ParacÃ©tamol, IbuprofÃ¨ne, Vitamine C (sÃ©parÃ©s par des virgules)"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Séparez les médicaments par des virgules
+                    SÃ©parez les mÃ©dicaments par des virgules
                   </p>
                 </div>
                 <div>
@@ -880,21 +865,21 @@ export default function MedecinPage() {
                   />
                 </div>
                 <div>
-                  <Label>Durée du traitement</Label>
+                  <Label>DurÃ©e du traitement</Label>
                   <Input
                     value={nouvellePrescription.duree_traitement}
                     onChange={(e) => setNouvellePrescription({...nouvellePrescription, duree_traitement: e.target.value})}
                     placeholder="Ex: 7 jours"
                   />
                 </div>
-                <Button type="submit" className="rounded-xl shadow-md bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-green-400">Créer la prescription</Button>
+                <Button type="submit" className="rounded-xl h-11 bg-gradient-to-r from-cyan-600 to-emerald-600 text-white font-semibold shadow-md hover:shadow-lg transition-all">Créer la prescription</Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card className="mt-6">
+          <Card className="premium-card mt-6">
             <CardHeader>
-              <CardTitle>Prescriptions récentes</CardTitle>
+              <CardTitle className="ds-section-title">Prescriptions récentes</CardTitle>
             </CardHeader>
             <CardContent>
               {prescriptions.length === 0 ? (
@@ -904,12 +889,12 @@ export default function MedecinPage() {
                   {prescriptions.map((presc) => (
                     <div
                       key={presc.id}
-                      className="p-4 border rounded-md bg-white"
+                      className="premium-list-item"
                     >
-                      <p className="font-semibold">{presc.description}</p>
+                      <p className="ds-row-name">{presc.description}</p>
                       {presc.medicaments && (
                         <div className="mt-2">
-                          <p className="text-sm font-medium text-gray-700">Médicaments:</p>
+                          <p className="text-sm font-medium text-gray-700">MÃ©dicaments:</p>
                           {Array.isArray(presc.medicaments) ? (
                             <ul className="text-sm text-gray-600 list-disc list-inside">
                               {presc.medicaments.map((med, index) => (
@@ -929,7 +914,7 @@ export default function MedecinPage() {
                       )}
                       {presc.duree_traitement && (
                         <div className="mt-2">
-                          <p className="text-sm font-medium text-gray-700">Durée:</p>
+                          <p className="text-sm font-medium text-gray-700">DurÃ©e:</p>
                           <p className="text-sm text-gray-600">{presc.duree_traitement}</p>
                         </div>
                       )}
@@ -945,11 +930,11 @@ export default function MedecinPage() {
         </TabsContent>
 
         <TabsContent value="planning">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Gérer mon planning de disponibilité</CardTitle>
+              <CardTitle>GÃ©rer mon planning de disponibilitÃ©</CardTitle>
               <CardDescription>
-                Définissez vos horaires de disponibilité pour la semaine
+                DÃ©finissez vos horaires de disponibilitÃ© pour la semaine
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -962,7 +947,7 @@ export default function MedecinPage() {
                       onValueChange={(value) => setNouveauPlanning({...nouveauPlanning, jour: value})}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner un jour" />
+                        <SelectValue placeholder="SÃ©lectionner un jour" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="MONDAY">Lundi</SelectItem>
@@ -976,7 +961,7 @@ export default function MedecinPage() {
                     </Select>
                   </div>
                   <div>
-                    <Label>Heure de début</Label>
+                    <Label>Heure de dÃ©but</Label>
                     <Input
                       type="time"
                       value={nouveauPlanning.heureDebut}
@@ -1011,23 +996,21 @@ export default function MedecinPage() {
                     placeholder="Notes sur cette plage horaire..."
                   />
                 </div>
-                <Button type="submit" className="rounded-xl shadow-md bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-green-400">Ajouter au planning</Button>
+                <Button type="submit" className="rounded-xl h-11 bg-gradient-to-r from-cyan-600 to-emerald-600 text-white font-semibold shadow-md hover:shadow-lg transition-all">Ajouter au planning</Button>
               </form>
 
               <div className="mt-6">
                 <h3 className="text-lg font-semibold mb-4">Mon planning actuel</h3>
                 {plannings.length === 0 ? (
-                  <p className="text-gray-500">Aucun planning défini</p>
+                  <p className="ds-empty-body">Aucun planning dÃ©fini</p>
                 ) : (
                   <div className="space-y-4">
                     {plannings.map((planning) => (
                       <div
                         key={planning.id}
-                        className="p-4 border rounded-md bg-white"
-                      >
-                        <div className="flex justify-between items-start">
+                        className="ds-row"><div className="flex justify-between items-center gap-3">
                           <div>
-                            <p className="font-semibold">
+                            <p className="ds-row-name">
                               {planning.jour === "MONDAY" && "Lundi"}
                               {planning.jour === "TUESDAY" && "Mardi"}
                               {planning.jour === "WEDNESDAY" && "Mercredi"}
@@ -1076,27 +1059,27 @@ export default function MedecinPage() {
         </TabsContent>
 
         <TabsContent value="alertes">
-          <Card className="shadow-xl rounded-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 transition-transform hover:scale-[1.02] animate-fade-in">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle>Alertes épidémiologiques</CardTitle>
+              <CardTitle>Alertes Ã©pidÃ©miologiques</CardTitle>
               <CardDescription>
-                Surveillez et gérez les alertes épidémiologiques détectées
+                Surveillez et gÃ©rez les alertes Ã©pidÃ©miologiques dÃ©tectÃ©es
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Bouton pour déclencher l'analyse épidémiologique */}
+                {/* Bouton pour dÃ©clencher l'analyse Ã©pidÃ©miologique */}
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="text-lg font-semibold">Analyse épidémiologique</h3>
+                    <h3 className="text-lg font-semibold">Analyse Ã©pidÃ©miologique</h3>
                     <p className="text-sm text-gray-600">
-                      Déclenchez une analyse pour détecter les épidémies potentielles (seuil : 5 patients minimum)
+                      DÃ©clenchez une analyse pour dÃ©tecter les Ã©pidÃ©mies potentielles (seuil : 5 patients minimum)
                     </p>
                   </div>
                   <Button 
                     onClick={analyserSymptomes}
                     disabled={loadingAlertes}
-                    className="rounded-xl shadow-md bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold transition-transform hover:scale-105 focus:ring-2 focus:ring-red-400"
+                    className="rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold transition-colors focus:ring-2 focus:ring-red-400"
                   >
                     {loadingAlertes ? (
                       <div className="flex items-center">
@@ -1106,7 +1089,7 @@ export default function MedecinPage() {
                     ) : (
                       <>
                         <AlertTriangle className="h-4 w-4 mr-2" />
-                        Analyser les symptômes
+                        Analyser les symptÃ´mes
                       </>
                     )}
                   </Button>
@@ -1125,7 +1108,7 @@ export default function MedecinPage() {
                     <div className="text-center py-8 text-gray-500">
                       <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                       <p>Aucune alerte active</p>
-                      <p className="text-sm">Cliquez sur "Analyser les symptômes" pour détecter les épidémies</p>
+                      <p className="text-sm">Cliquez sur "Analyser les symptÃ´mes" pour dÃ©tecter les Ã©pidÃ©mies</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -1141,14 +1124,14 @@ export default function MedecinPage() {
                                 <div className="flex items-center gap-2 mb-2">
                                   <AlertTriangle className="h-5 w-5 text-red-600" />
                                   <h4 className="font-semibold text-red-800">
-                                    Épidémie détectée
+                                    Ã‰pidÃ©mie dÃ©tectÃ©e
                                   </h4>
                                   <Badge variant="destructive">
                                     {alerte.nombrePatients} patients
                                   </Badge>
                                 </div>
                                 <p className="text-sm text-gray-700 mb-2">
-                                  <strong>Symptôme:</strong> {alerte.symptome}
+                                  <strong>SymptÃ´me:</strong> {alerte.symptome}
                                 </p>
                                 <p className="text-sm text-gray-700 mb-2">
                                   <strong>Localisation:</strong> {alerte.ville}, {alerte.quartier}
@@ -1159,7 +1142,7 @@ export default function MedecinPage() {
                                   </p>
                                 )}
                                 <p className="text-xs text-gray-500">
-                                  Détecté le {new Date(alerte.dateDetection).toLocaleDateString("fr-FR")} à {new Date(alerte.dateDetection).toLocaleTimeString("fr-FR")}
+                                  DÃ©tectÃ© le {new Date(alerte.dateDetection).toLocaleDateString("fr-FR")} Ã  {new Date(alerte.dateDetection).toLocaleTimeString("fr-FR")}
                                 </p>
                               </div>
                               <div className="flex gap-2">
@@ -1170,7 +1153,7 @@ export default function MedecinPage() {
                                   className="border-green-600 text-green-600 hover:bg-green-50"
                                 >
                                   <CheckCircle className="h-4 w-4 mr-1" />
-                                  Résoudre
+                                  RÃ©soudre
                                 </Button>
                               </div>
                             </div>
@@ -1180,11 +1163,11 @@ export default function MedecinPage() {
                   )}
                 </div>
 
-                {/* Historique des alertes résolues */}
+                {/* Historique des alertes rÃ©solues */}
                 {alertes.filter(a => a.statut === "RESOLVED").length > 0 && (
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">
-                      Alertes résolues ({alertes.filter(a => a.statut === "RESOLVED").length})
+                      Alertes rÃ©solues ({alertes.filter(a => a.statut === "RESOLVED").length})
                     </h3>
                     <div className="space-y-4">
                       {alertes
@@ -1199,14 +1182,14 @@ export default function MedecinPage() {
                                 <div className="flex items-center gap-2 mb-2">
                                   <CheckCircle className="h-5 w-5 text-green-600" />
                                   <h4 className="font-semibold text-gray-800">
-                                    Alerte résolue
+                                    Alerte rÃ©solue
                                   </h4>
                                   <Badge variant="secondary">
                                     {alerte.nombrePatients} patients
                                   </Badge>
                                 </div>
                                 <p className="text-sm text-gray-700 mb-2">
-                                  <strong>Symptôme:</strong> {alerte.symptome}
+                                  <strong>SymptÃ´me:</strong> {alerte.symptome}
                                 </p>
                                 <p className="text-sm text-gray-700 mb-2">
                                   <strong>Localisation:</strong> {alerte.ville}, {alerte.quartier}
@@ -1217,7 +1200,7 @@ export default function MedecinPage() {
                                   </p>
                                 )}
                                 <p className="text-xs text-gray-500">
-                                  Détecté le {new Date(alerte.dateDetection).toLocaleDateString("fr-FR")} à {new Date(alerte.dateDetection).toLocaleTimeString("fr-FR")}
+                                  DÃ©tectÃ© le {new Date(alerte.dateDetection).toLocaleDateString("fr-FR")} Ã  {new Date(alerte.dateDetection).toLocaleTimeString("fr-FR")}
                                 </p>
                               </div>
                             </div>
@@ -1234,3 +1217,5 @@ export default function MedecinPage() {
     </div>
   )
 }
+
+
