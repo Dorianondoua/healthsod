@@ -253,14 +253,14 @@ export default function LandingPage() {
     {
       num: "02", tag: "CONSULTATIONS", icon: Calendar,
       title: "Trouvez un médecin. Réservez en deux clics.",
-      body: "500+ spécialistes vérifiés. Téléconsultation ou en cabinet. Filtres par disponibilité, distance et langue.",
+      body: "Des spécialistes vérifiés, en téléconsultation ou en cabinet. Filtres par disponibilité, distance et langue.",
       bullets: ["Avis vérifiés", "Téléconsultation HD", "Rappel automatique 24h avant"],
       Mockup: MockupMedecin, reverse: true,
     },
     {
       num: "03", tag: "DOSSIER MÉDICAL", icon: Shield,
       title: "Vos données. À votre rythme. Sous votre contrôle.",
-      body: "Chiffrement AES-256. Vous décidez avec qui partager — et pour combien de temps. Conforme RGPD et HDS.",
+      body: "Vos données sont chiffrées. Vous décidez avec qui partager — et pour combien de temps. Dans le respect de votre vie privée.",
       bullets: ["Partage temporaire", "Audit log complet", "Export à tout moment"],
       Mockup: MockupDossier, reverse: false,
     },
@@ -389,7 +389,7 @@ export default function LandingPage() {
             {/* Trust strip */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
               className="flex items-center gap-10 border-t border-dashed border-slate-200 pt-6">
-              {[["10K+", "PATIENTS"], ["500+", "MÉDECINS"], ["4.9★", "APP STORE"]].map(([v, l]) => (
+              {[["100%", "GRATUIT"], ["Privé", "& SÉCURISÉ"], ["24/7", "ACCESSIBLE"]].map(([v, l]) => (
                 <div key={l}>
                   <div className="text-2xl font-black leading-tight text-slate-950">{v}</div>
                   <div className="mt-0.5 text-[10px] font-semibold tracking-[0.18em] text-slate-400">{l}</div>
@@ -414,8 +414,8 @@ export default function LandingPage() {
       {/* ═══════════════════ TRUST BAND ═══════════════════ */}
       <div className="border-y border-slate-200/80 bg-white/70 px-6 py-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-8">
-          <span className="whitespace-nowrap text-[10px] font-semibold tracking-[0.24em] text-slate-400">ILS NOUS FONT CONFIANCE</span>
-          {["CHU Dakar", "Polyclinique Atlantique", "Mut. Santé+", "Pharma Group", "Croix Bleue"].map((p) => (
+          <span className="whitespace-nowrap text-[10px] font-semibold tracking-[0.24em] text-slate-400">CE QUE VOUS OBTENEZ</span>
+          {["Téléconsultation", "Journal de santé", "Dossier médical", "Rappels de RDV", "Données chiffrées"].map((p) => (
             <span key={p} className="cursor-default whitespace-nowrap text-base font-bold text-slate-300 transition-colors hover:text-slate-500">
               {p}
             </span>
@@ -487,29 +487,26 @@ export default function LandingPage() {
           </motion.div>
           <motion.p variants={fadeUp}
             className="mx-auto mb-8 max-w-3xl text-2xl font-bold leading-snug text-white md:text-4xl">
-            Avant HealthSOD, je perdais une heure par semaine à chercher mes ordonnances.
-            Aujourd'hui, tout est à portée de main — et mes médecins ont toujours le contexte complet.
+            Votre santé ne devrait pas se perdre entre des papiers, des SMS et des salles d'attente.
+            HealthSOD réunit vos consultations, vos analyses et vos médecins au même endroit — pour que vous gardiez toujours le contrôle.
           </motion.p>
           <motion.div variants={fadeUp} className="mb-12 flex items-center justify-center gap-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-400/15 text-sm font-bold text-cyan-100 ring-1 ring-white/10">AD</div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-400/15 text-sm font-bold text-cyan-100 ring-1 ring-white/10">SOD</div>
             <div className="text-left">
-              <div className="text-sm font-semibold text-white">Aïssatou Diallo</div>
-              <div className="text-[10px] font-semibold tracking-[0.18em] text-white/40">PATIENTE · 8 MOIS D'UTILISATION</div>
+              <div className="text-sm font-semibold text-white">L'équipe HealthSOD</div>
+              <div className="text-[10px] font-semibold tracking-[0.18em] text-white/40">NOTRE MISSION</div>
             </div>
           </motion.div>
           <motion.div variants={stagger} className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
-              ["« Indispensable pour mon père. »", "Mariam K."],
-              ["« Le suivi à distance change tout. »", "Dr. Mensah"],
-              ["« Alertes épidémiques très utiles. »", "Fatou N."],
-            ].map(([q, n]) => (
-              <motion.div key={n} variants={fadeUp}
+              ["Téléconsultation", "Consultez vos médecins sans avoir à vous déplacer."],
+              ["Dossier sécurisé", "Vous contrôlez le partage de vos données médicales."],
+              ["Journal de santé", "Notez vos symptômes et suivez vos tendances dans le temps."],
+            ].map(([t, d]) => (
+              <motion.div key={t} variants={fadeUp}
                 className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 text-left shadow-2xl shadow-black/10">
-                <div className="flex gap-0.5 mb-3">
-                  {Array(5).fill(0).map((_, i) => <span key={i} className="text-yellow-400 text-xs">★</span>)}
-                </div>
-                <p className="mb-3 text-sm text-white/70">{q}</p>
-                <div className="text-[10px] font-semibold tracking-[0.18em] text-white/35">— {n}</div>
+                <div className="mb-2 text-sm font-semibold text-white">{t}</div>
+                <p className="text-sm text-white/70">{d}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -530,7 +527,7 @@ export default function LandingPage() {
             className="grid grid-cols-1 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] md:grid-cols-3">
             {[
               ["01", "Créez votre profil", "90 secondes — sans CB."],
-              ["02", "Trouvez votre médecin", "500+ pros vérifiés."],
+              ["02", "Trouvez votre médecin", "Des pros vérifiés."],
               ["03", "Suivez votre santé", "Dashboard centralisé."],
             ].map(([n, t, d], i) => (
               <div key={n}
@@ -558,7 +555,7 @@ export default function LandingPage() {
               Votre prochaine consultation<br />commence ici.
             </h2>
             <p className="mx-auto mb-8 max-w-md text-base leading-7 text-slate-600">
-              Rejoignez 10 000+ patients qui ont déjà choisi HealthSOD.
+              Créez votre compte gratuit et reprenez le contrôle de votre santé.
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
@@ -605,8 +602,8 @@ export default function LandingPage() {
           ))}
         </div>
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 border-t border-slate-200 pt-6 md:flex-row">
-          <p className="text-xs text-slate-400">© 2025 HealthSOD. Tous droits réservés.</p>
-          <p className="text-xs font-semibold tracking-[0.16em] text-slate-400">CONFORME RGPD · CERTIFIÉ HDS · AES-256</p>
+          <p className="text-xs text-slate-400">© 2026 HealthSOD. Tous droits réservés.</p>
+          <p className="text-xs font-semibold tracking-[0.16em] text-slate-400">DONNÉES CHIFFRÉES · CONFIDENTIALITÉ · CONTRÔLE TOTAL</p>
         </div>
       </footer>
 
